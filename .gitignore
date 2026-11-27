@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.venv/
+plans/
+comment.md
+remediate_result.json
+*.egg-info/

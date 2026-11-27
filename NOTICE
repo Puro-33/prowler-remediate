@@ -1,0 +1,8 @@
+prowler-remediate
+Copyright 2026 prowler-remediate contributors
+
+This project builds on Prowler (https://github.com/prowler-cloud/prowler),
+Copyright Prowler contributors, licensed under the Apache License 2.0.
+It imports Prowler's check classes at runtime (installed from PyPI as the
+`prowler` package) and does not vendor Prowler source. It is not affiliated
+with or endorsed by Prowler.

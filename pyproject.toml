@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prowler-remediate"
+version = "0.1.0"
+description = "Plan, apply, verify and roll back AWS fixes for Prowler findings (moto sandbox demo)"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.10,<3.14"
+dependencies = ["prowler==5.52.0", "boto3"]
+
+[project.optional-dependencies]
+test = ["pytest", "moto[all]==5.1.11"]
+
+[tool.setuptools.packages.find]
+include = ["remediate*"]
+
+[tool.pytest.ini_options]
+testpaths = ["remediate/tests"]

@@ -1,0 +1,14 @@
+[
+  {
+    "status_code": "FAIL",
+    "status_detail": "sample event (hand-written, minimal OCSF fields)",
+    "metadata": {
+      "event_code": "s3_bucket_public_access"
+    },
+    "resources": [
+      {
+        "uid": "arn:aws:s3:::demo-public-bucket"
+      }
+    ]
+  }
+]
