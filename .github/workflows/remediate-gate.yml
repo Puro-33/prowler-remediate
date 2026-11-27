@@ -1,0 +1,29 @@
+name: Remediation gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      ocsf_glob:
+        description: Path of the json-ocsf re-scan output
+        default: samples/ocsf-pass.json
+  workflow_call:
+    inputs:
+      ocsf_glob:
+        type: string
+        default: samples/ocsf-pass.json
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fail if the re-scan still has FAIL findings
+        env:
+          OCSF_GLOB: ${{ inputs.ocsf_glob }}
+        run: python -m remediate.ci.gate "$OCSF_GLOB" --summary "$GITHUB_STEP_SUMMARY"

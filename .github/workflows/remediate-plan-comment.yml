@@ -1,0 +1,43 @@
+name: Remediation plan comment
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install -e ".[test]"
+      - name: Dry-run plans against moto (no real cloud account)
+        run: |
+          mkdir -p plans
+          for kind in s3 s3-write s3-list ssh rdp ebs iam-length; do
+            python -m remediate --demo "$kind" --out "plans/$kind.json"
+          done
+      - name: Render comment
+        run: |
+          python -m remediate.ci.plan_comment "plans/*.json" --out comment.md
+          cat comment.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Post or update the PR comment
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          id=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
+            --jq '[.[] | select(.body | contains("<!-- remediate-plan-comment -->"))][0].id // empty')
+          if [ -n "$id" ]; then
+            gh api --method PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$id" -F body=@comment.md
+          else
+            gh pr comment "$PR" --body-file comment.md
+          fi
